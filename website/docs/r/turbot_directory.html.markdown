@@ -16,7 +16,7 @@ The `Turbot Directory` resource adds support for authentication directories. It 
 **Creating Your First Turbot Directory**
 
 ```hcl
-	resource "turbot_turbot_directory" "test" {
+resource "turbot_turbot_directory" "test" {
 	parent              = "tmod:@turbot/turbot#/"
   	title               = "provider_test_refactor"
   	description         = "test directory"
