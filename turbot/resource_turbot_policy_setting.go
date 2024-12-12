@@ -2,6 +2,7 @@ package turbot
 
 import (
 	"fmt"
+
 	"github.com/go-yaml/yaml"
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/turbot/terraform-provider-turbot/apiClient"
@@ -96,6 +97,26 @@ func resourceTurbotPolicySetting() *schema.Resource {
 				ForceNew: true,
 				Optional: true,
 			},
+			"enforce": {
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"value": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"template": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"template_input": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+					},
+				},
+			},
 		},
 	}
 }
@@ -139,6 +160,35 @@ func resourceTurbotPolicySettingCreate(d *schema.ResourceData, meta interface{})
 	// 1) pass value as 'value'
 	// 2) pass value as 'valueSource'. update d.value to be the yaml parsed version of 'value'
 	input := mapFromResourceData(d, policySettingInputProperties)
+
+	var customInputPhase map[string]string
+	var enforceValString, enforceTemplate, enforceTemplateInput string
+	enforceValueList := d.Get("enforce").([]interface{})
+
+	if len(enforceValueList) > 0 {
+		enforceValue := enforceValueList[0].(map[string]interface{})
+
+		if len(enforceValue) > 0 {
+			if enforceValue["template"] != nil {
+				customInputPhase = map[string]string{
+					"template":       enforceValue["template"].(string),
+					"template_input": enforceValue["template_input"].(string),
+				}
+				enforceTemplate = enforceValue["template"].(string)
+				enforceTemplateInput = enforceValue["template_input"].(string)
+			}
+
+			if enforceValue["value"] != nil {
+				customInputPhase = map[string]string{
+					"value": enforceValue["value"].(string),
+				}
+
+				enforceValString = enforceValue["value"].(string)
+			}
+			input["enforce"] = customInputPhase
+
+		}
+	}
 
 	if value, ok := d.GetOk("template_input"); ok {
 		// NOTE: ParseYamlString doesn't validate input as valid YAML format, on error it returns value
@@ -186,6 +236,15 @@ func resourceTurbotPolicySettingCreate(d *schema.ResourceData, meta interface{})
 	d.Set("valid_from_timestamp", policySetting.ValidFromTimestamp)
 	d.Set("valid_to_timestamp", policySetting.ValidToTimestamp)
 	d.Set("type", policySetting.Type.Uri)
+
+	d.Set("phase", map[string]map[string]string{
+		"enforce": {
+			"value":          enforceValString,
+			"template":       enforceTemplate,
+			"template_input": enforceTemplateInput,
+		},
+	})
+
 	// assign the id
 	d.SetId(policySetting.Turbot.Id)
 
@@ -229,6 +288,12 @@ func resourceTurbotPolicySettingRead(d *schema.ResourceData, meta interface{}) e
 	d.Set("valid_from_timestamp", policySetting.ValidFromTimestamp)
 	d.Set("valid_to_timestamp", policySetting.ValidToTimestamp)
 	d.Set("type", policySetting.Type.Uri)
+
+	if value, ok := d.GetOk("phase"); ok {
+		// If ok is true, 'example_attribute' is set in the configuration
+		d.Set("phase", value)
+	}
+
 	return nil
 }
 

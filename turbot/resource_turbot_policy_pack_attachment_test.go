@@ -60,7 +60,7 @@ func testAccCheckPolicyPackAttachmentExists(resource string) resource.TestCheckF
 		}
 		client := testAccProvider.Meta().(*apiClient.Client)
 		policyPackId, resource := parsePolicyPackId(rs.Primary.ID)
-		_, err := client.ReadSmartFolder(policyPackId)
+		_, err := client.ReadPolicyPack(policyPackId)
 		if err != nil {
 			return fmt.Errorf("error fetching item with resource %s. %s", resource, err)
 		}
@@ -73,7 +73,7 @@ func testAccCheckPolicyPackAttachmentDestroy(s *terraform.State) error {
 		if rs.Type != "policyPack" {
 			continue
 		}
-		_, err := client.ReadSmartFolder(rs.Primary.ID)
+		_, err := client.ReadPolicyPack(rs.Primary.ID)
 		if err == nil {
 			return fmt.Errorf("alert still exists")
 		}

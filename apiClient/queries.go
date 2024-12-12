@@ -313,6 +313,70 @@ func detachSmartFolderAttachment() string {
 	}`)
 }
 
+// policy pack
+func createPolicyPackMutation() string {
+	return fmt.Sprintf(`mutation CreatePolicyPack($input: CreatePolicyPackInput!) {
+		policyPack: createPolicyPack(input: $input) {
+			turbot {
+				id
+				parentId
+				akas
+				title
+			}
+		}
+	}`)
+}
+
+func readPolicyPackQuery(id string) string {
+	return fmt.Sprintf(`{
+	policyPack: resource(id:"%s") {
+		title: get(path:"turbot.title")
+		description: get(path:"description")
+		targets: get(path: "targets")
+		filters: get(path:"filters")
+		parent:	get(path:"turbot.parentId")
+		turbot: get(path:"turbot")
+   		attachedResources{
+			items{
+				turbot: get(path:"turbot")
+			}
+		}
+	}
+}`, id)
+}
+
+func updatePolicyPackMutation() string {
+	return fmt.Sprintf(`mutation UpdatePolicyPack($input: UpdatePolicyPackInput!) {
+		policyPack: updatePolicyPack(input: $input) {
+			turbot {
+				id
+				parentId
+				akas
+			}
+		}
+	}`)
+}
+
+func createPolicyPackAttachmentMutation() string {
+	return `mutation AttachPolicyPack($input: AttachPolicyPackInput!) {
+		attachPolicyPacks(input: $input) {
+			turbot {
+				id
+			}
+		}
+	}`
+}
+
+func detachPolicyPackAttachmentMutation() string {
+	return `mutation DetachPolicyPack($input: DetachPolicyPackInput!) {
+		detachPolicyPack: detachPolicyPacks(input: $input) {
+    		turbot {
+				id
+			}
+  		}
+	}`
+}
+
 // mod
 func installModMutation() string {
 	return `mutation InstallMod($input: InstallModInput!) {
