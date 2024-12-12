@@ -10,7 +10,6 @@ import (
 	"github.com/mitchellh/go-homedir"
 	errorsHandler "github.com/turbot/terraform-provider-turbot/errors"
 	"github.com/turbot/terraform-provider-turbot/helpers"
-	"io/ioutil"
 	"net/url"
 	"os"
 	"path"
@@ -162,7 +161,7 @@ func BuildApiUrl(rawWorkspace string) (string, error) {
 	if u.Path != "" {
 		apiVersionRegex := regexp.MustCompile(`\/api\/v[0-9]+$|latest$`)
 		if !apiVersionRegex.Match([]byte(u.Path)) {
-			return "", fmt.Errorf("invalid worksapce %s", workspace)
+			return "", fmt.Errorf("invalid workspace %s", workspace)
 		}
 		u.Path = path.Join(u.Path, "graphql")
 	} else {
@@ -202,7 +201,7 @@ func loadProfile(credentialsPath, profile string) (ClientCredentials, error) {
 	if len(profile) == 0 {
 		profile = "default"
 	}
-	yamlFile, err := ioutil.ReadFile(credentialsPath)
+	yamlFile, err := os.ReadFile(credentialsPath)
 	if err != nil {
 		return ClientCredentials{}, err
 	}
