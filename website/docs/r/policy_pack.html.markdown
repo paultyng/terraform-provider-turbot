@@ -16,9 +16,11 @@ nav:
 **Creating Your First Policy Pack**
 
 ```hcl
-resource "turbot_policy_pack" "folder" {
-  parent  = "tmod:@turbot/turbot#/"
-  title   = "My Policy Pack"
+resource "turbot_policy_pack" "pack" {
+  parent      = "tmod:@turbot/turbot#/"
+  title       = "Demo Policy Pack"
+  description = "My Demo Policy Pack"
+  akas        = ["my-demo-policy-pack"]
 }
 ```
 
@@ -29,7 +31,6 @@ The following arguments are supported:
 - `title` - (Required) Short display name for the policy pack.
 - `akas` - (Optional) Unique identifier of the resource.
 - `description` - (Optional) Brief description of the purpose and details of the policy pack.
-- `filter` - (Optional) A query syntax to identify the resources onto which the policy pack will automatically get attached.
 - `parent` - (Optional) The `id` or `aka` of the level at which the policy pack will be created. Defaults to `tmod:@turbot/turbot#/`. 
 
 ## Attributes Reference
