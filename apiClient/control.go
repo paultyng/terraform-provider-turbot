@@ -17,3 +17,31 @@ func (client *Client) ReadControl(args string) (*Control, error) {
 
 	return &control, nil
 }
+
+func (client *Client) MuteControl(input map[string]interface{}) (*MuteControl, error) {
+	query := muteControlMutation()
+	responseData := &MuteControlResponse{}
+	variables := map[string]interface{}{
+		"input": input,
+	}
+
+	// execute api call
+	if err := client.doRequest(query, variables, responseData); err != nil {
+		return nil, client.handleUpdateError(err, input, "control")
+	}
+	return &responseData.MuteControl, nil
+}
+
+func (client *Client) UnMuteControl(input map[string]interface{}) (*MuteControl, error) {
+	query := unMuteControlMutation()
+	responseData := &MuteControlResponse{}
+	variables := map[string]interface{}{
+		"input": input,
+	}
+
+	// execute api call
+	if err := client.doRequest(query, variables, responseData); err != nil {
+		return nil, client.handleUpdateError(err, input, "control")
+	}
+	return &responseData.MuteControl, nil
+}

@@ -96,6 +96,21 @@ type Control struct {
 		Uri string
 	}
 	Turbot map[string]string
+	Mute   interface{}
+}
+
+// Control mute
+
+type MuteControlResponse struct {
+	MuteControl MuteControl
+}
+
+type MuteControl struct {
+	Mute interface{}
+	Type struct {
+		Uri string
+	}
+	Turbot map[string]string
 }
 
 // is the validation response successful?
